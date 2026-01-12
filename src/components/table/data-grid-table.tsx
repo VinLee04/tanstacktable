@@ -249,7 +249,7 @@ function Filter({
     return filterVariant === 'select' ?
         <Select
             onValueChange={column.setFilterValue}
-            value={columnFilterValue?.toString()}
+            value={columnFilterValue ?? "All"}
         >
             <SelectTrigger className="min-w-32 w-full !h-7 text-xs font-medium rounded-xs">
                 <SelectValue placeholder='All'/>
@@ -257,17 +257,12 @@ function Filter({
             <SelectContent align="end" side="bottom">
                 <SelectItem key='all' value={undefined!} className='h-7'>All</SelectItem>
                 {sortedUniqueValues.map((value) =>
-                    column.id == 'available-disabled' ?
-                        <SelectItem key={value} value={value} className='w-full text-xs font-medium'>
-                            {value ? 'Available' : 'Disabled'}
+                    column.id == 'national' ?
+                        <SelectItem className='text-xs font-medium' key={value} value={value}>
+                            {value == 'Vietnamese' ? '🇻🇳' : value == 'Korean' ? '🇰🇷' : '🇺🇸'} - {value}
                         </SelectItem>
                         :
-                        column.id == 'national' ?
-                            <SelectItem className='text-xs font-medium' key={value} value={value}>
-                                {value == 'Vietnamese' ? '🇻🇳' : value == 'Korean' ? '🇰🇷' : '🇺🇸'} - {value}
-                            </SelectItem>
-                            :
-                            <SelectItem className='text-xs font-medium' key={value} value={value}>{value}</SelectItem>
+                        <SelectItem className='text-xs font-medium' key={value} value={value}>{value}</SelectItem>
                 )}
             </SelectContent>
         </Select>
