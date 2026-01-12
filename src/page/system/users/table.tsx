@@ -49,7 +49,7 @@ const UserManagementTable = () => {
 
 
     useEffect(() => {
-        const newData = makeUser(200);
+        const newData = makeUser(20000);
         new Promise(resolve => setTimeout(resolve, 4300)).then(() => {
                 setUserData(newData);
                 setLoading(false);
