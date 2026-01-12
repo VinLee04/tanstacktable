@@ -1,3 +1,4 @@
+import * as XLSX from "xlsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/table/avatar"
@@ -24,13 +25,13 @@ import {
     DebouncedInput
 } from "@/components/table/data-grid-table.tsx";
 import {makeUser, type TUser} from "@/mock/user.ts";
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {DataGridColumnHeader} from "@/components/table/data-grid-column-header.tsx";
 import {DataGrid} from "@/components/table/data-grid.tsx";
 import {DataGridPagination} from "@/components/table/data-grid-pagination.tsx";
 import {CardTable, CardToolbar} from "@/components/table/card.tsx";
 import {DataGridColumnVisibility} from "@/components/table/data-grid-column-visibility.tsx";
-import {Cat, ListFilter, Pause, Play, Settings2, X} from "lucide-react";
+import {Cat, Download, ListFilter, Pause, Play, Settings2, X} from "lucide-react";
 import {TableActionBar} from "@/components/table/table-action-bar.tsx";
 import {Button} from "@/components/table/button.tsx";
 import {ActiveBadge, Badge, type TUserRole, UserRoleBadge} from "@/components/table/badge.tsx";
@@ -48,7 +49,7 @@ const UserManagementTable = () => {
 
 
     useEffect(() => {
-        const newData = makeUser(20000);
+        const newData = makeUser(200);
         new Promise(resolve => setTimeout(resolve, 4300)).then(() => {
                 setUserData(newData);
                 setLoading(false);
@@ -287,6 +288,19 @@ const UserManagementTable = () => {
         ], [isShowFilter]
     )
 
+    // const handleExportToCsv = (): void => {
+    //         const headers = table
+    //             .getHeaderGroups()
+    //             .map((x) => x.headers)
+    //             .flat();
+    //
+    //         const rows = table.getCoreRowModel().rows;
+    //
+    //         // const csvBlob = getCsvBlob(headers, rows);
+    //         exportToCsv("persons_data", headers, rows);
+    //     };
+
+
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         columns,
@@ -321,9 +335,25 @@ const UserManagementTable = () => {
         } : u));
         table.setRowSelection({});
     }
+
+    const handleExportExcel = useCallback((type: 'all'|'selection') => {
+        const Heading = [['ID', 'Username', 'Avatar', 'Email', 'Role', 'Active', 'Join Date', 'Salary', 'Nationality', 'Flag']]
+        const Data = type === 'all' ? filteredData! :
+            filteredData!.filter(u => selectedIds.includes(u.id as unknown as Pick<TUser, 'id'>));
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet([]);
+
+        XLSX.utils.sheet_add_aoa(ws, Heading);
+        XLSX.utils.sheet_add_json(ws, Data, {origin: 'A2', skipHeader: true});
+
+        XLSX.utils.book_append_sheet(wb, ws, "User Data");
+        XLSX.writeFile(wb, "User Management.xlsx");
+    }, [filteredData, selectedIds]);
+
     return (
         <>
-            <section className='minHeight max-w-7xl w-full px-6'>
+            <section className='minHeight max-w-7xl w-full sm:px-6'>
 
                 <DataGrid
                     table={table}
@@ -343,7 +373,7 @@ const UserManagementTable = () => {
                 >
                     <Card>
                         <CardHeader className="py-3.5">
-                            <CardTitle>User Management </CardTitle>
+                            <CardTitle>User Management</CardTitle>
 
                             <DebouncedInput
                                 value={searchQuery}
@@ -351,10 +381,10 @@ const UserManagementTable = () => {
                                 placeholder="Search everything..."
                                 className="max-w-sm"
                             />
-
-                            <CardToolbar>
+                            <CardToolbar className='overflow-x-auto'>
                                 <Button onClick={() => setLoading(prev => !prev)}
                                         size='xs'>{loading ? <Pause/> : <Play/>}</Button>
+                                <Button onClick={() => handleExportExcel('all')} size='xs'><Download/>Export All</Button>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" size='xs'>
@@ -438,6 +468,7 @@ const UserManagementTable = () => {
                                appearance='outline' onClick={() => handleActive(false)}>Disable</Badge>
                     </Button>
                     {selectedIds.length == 1 && <UserManagementUpdateForm user={selectedUser}/>}
+                    <Button size='sm' className='py-0' onClick={() => handleExportExcel('selection')}><Download/>Export</Button>
                 </TableActionBar>
             </section>
         </>
