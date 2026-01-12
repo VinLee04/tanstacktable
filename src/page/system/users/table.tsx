@@ -449,7 +449,7 @@ const UserManagementTable = () => {
                             </ScrollArea>
                         </CardTable>
                         <CardFooter>
-                            <DataGridPagination/>
+                            <DataGridPagination sizes={[50, 100, 200, 500, 1000, 2000]}/>
                         </CardFooter>
                     </Card>
 

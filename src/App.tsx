@@ -2,6 +2,7 @@ import type {RowData} from "@tanstack/react-table";
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import MainLayout from "@/components/layout/main-layout.tsx";
 import UserManagementPage from "@/page/system/users";
+import MakeExcel from "@/page/test/MakeExcel.tsx";
 
 declare module '@tanstack/react-table' {
     //allows us to define custom properties for our columns
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
         children: [
             {index: true, element: <UserManagementPage/>},
             {path: 'users', element: <UserManagementPage/>},
+            {path: 'excel', element: <MakeExcel/>},
 
         ]
     }
