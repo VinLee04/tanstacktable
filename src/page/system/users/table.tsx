@@ -269,9 +269,9 @@ const UserManagementTable = () => {
             },
             {
                 accessorKey: 'active',
-                id: 'available-disabled',
+                id: 'active',
                 header: ({column}) => <DataGridColumnHeader column={column} title='Active'/>,
-                cell: ({cell}) => <ActiveBadge className='py-3.5' isActive={cell.getValue() as boolean}/>,
+                cell: ({cell}) => <ActiveBadge className='py-3.5' isActive={cell.getValue() == 'Available'}/>,
                 meta: {
                     headerClassName: '',
                     cellClassName: '',
