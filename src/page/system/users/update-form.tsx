@@ -40,7 +40,10 @@ const formSchema = z.object({
 const UserManagementUpdateForm = ({user}: UserManagementUpdateFormProps) => {
 
     const form = useForm({
-        defaultValues: {...user},
+        defaultValues: {
+            ...user,
+            active: user?.active == 'Available'
+        },
         validators: {onSubmit: formSchema,},
         onSubmit: async ({value}) => {
             toast("You submitted the following values:", {

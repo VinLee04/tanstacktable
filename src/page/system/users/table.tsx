@@ -30,7 +30,7 @@ import {DataGrid} from "@/components/table/data-grid.tsx";
 import {DataGridPagination} from "@/components/table/data-grid-pagination.tsx";
 import {CardTable, CardToolbar} from "@/components/table/card.tsx";
 import {DataGridColumnVisibility} from "@/components/table/data-grid-column-visibility.tsx";
-import {Cat, ListFilter, Pause, Play, Settings2} from "lucide-react";
+import {Cat, ListFilter, Pause, Play, Settings2, X} from "lucide-react";
 import {TableActionBar} from "@/components/table/table-action-bar.tsx";
 import {Button} from "@/components/table/button.tsx";
 import {ActiveBadge, Badge, type TUserRole, UserRoleBadge} from "@/components/table/badge.tsx";
@@ -40,6 +40,7 @@ import {Skeleton} from "@/components/table/skeleton.tsx";
 import UserManagementUpdateForm from "@/page/system/users/update-form.tsx";
 import type {DateRange} from "react-day-picker";
 import {format, isWithinInterval} from "date-fns";
+import {ButtonGroup} from "@/components/ui/button-group.tsx";
 
 const UserManagementTable = () => {
     const [userData, setUserData] = useState<TUser[] | undefined>(undefined);
@@ -316,7 +317,7 @@ const UserManagementTable = () => {
     const handleActive = (isActive: boolean) => {
         setUserData(prev => prev?.map(u => selectedIds.includes(u.id as unknown as Pick<TUser, 'id'>) ? {
             ...u,
-            active: isActive
+            active: isActive ? 'Available' : 'Disabled'
         } : u));
         table.setRowSelection({});
     }
@@ -392,8 +393,14 @@ const UserManagementTable = () => {
                                         </div>
                                     </PopoverContent>
                                 </Popover>
-                                <Button variant='secondary' size='xs'
-                                        onClick={() => setIsShowFilter(prev => !prev)}><ListFilter/> Filter</Button>
+                                <ButtonGroup>
+                                    <Button variant='secondary' size='xs'
+                                            onClick={() => setIsShowFilter(prev => !prev)}><ListFilter/> Filter</Button>
+                                    {columnFilters.length > 0 && (
+                                        <Button variant='primary' size='xs'
+                                                onClick={() => setColumnFilters([])}><X/></Button>
+                                    )}
+                                </ButtonGroup>
                                 <DataGridColumnVisibility
                                     table={table}
                                     trigger={

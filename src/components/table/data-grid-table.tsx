@@ -218,7 +218,7 @@ function Filter({
     const renderValue = (value: string[]) => {
         const MAX_COUNT = 2;
 
-        if (value.length === 0) return 'Select Multiple';
+        if (value.length === 0) return 'Multiple';
         let labels = [];
         if (column.columnDef.meta !== undefined && column.columnDef.meta.options !== undefined) {
             labels = value.map((val) => column.columnDef.meta?.options!.find((item) => item === val)).filter(Boolean);
@@ -251,23 +251,23 @@ function Filter({
             onValueChange={column.setFilterValue}
             value={columnFilterValue?.toString()}
         >
-            <SelectTrigger className="min-w-32 w-full !h-7 text-xs rounded-xs">
+            <SelectTrigger className="min-w-32 w-full !h-7 text-xs font-medium rounded-xs">
                 <SelectValue placeholder='All'/>
             </SelectTrigger>
             <SelectContent align="end" side="bottom">
                 <SelectItem key='all' value={undefined!} className='h-7'>All</SelectItem>
                 {sortedUniqueValues.map((value) =>
                     column.id == 'available-disabled' ?
-                        <SelectItem key={value} value={value} className='w-full text-xs'>
+                        <SelectItem key={value} value={value} className='w-full text-xs font-medium'>
                             {value ? 'Available' : 'Disabled'}
                         </SelectItem>
                         :
                         column.id == 'national' ?
-                            <SelectItem className='text-xs' key={value} value={value}>
+                            <SelectItem className='text-xs font-medium' key={value} value={value}>
                                 {value == 'Vietnamese' ? '🇻🇳' : value == 'Korean' ? '🇰🇷' : '🇺🇸'} - {value}
                             </SelectItem>
                             :
-                            <SelectItem className='text-xs' key={value} value={value}>{value}</SelectItem>
+                            <SelectItem className='text-xs font-medium' key={value} value={value}>{value}</SelectItem>
                 )}
             </SelectContent>
         </Select>
@@ -275,14 +275,20 @@ function Filter({
         filterVariant === 'multiple' ?
             <Select items={sortedUniqueValues} onValueChange={column.setFilterValue} value={columnFilterValue ?? []}
                     multiple>
-                <SelectTrigger className='min-w-32 h-7 text-xs w-full rounded-xs'>
-                    <SelectValue className="truncate font-medium">{renderValue}</SelectValue>
+                <SelectTrigger className='min-w-32 h-7 text-xs font-medium w-full rounded-xs'>
+                    <SelectValue
+                        className={`truncate font-medium ${columnFilterValue == '' && 'text-muted-foreground'}`}>{renderValue}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     {sortedUniqueValues.map((item) => (
-                        <SelectItem key={item} value={item} className='text-xs h-7'>
-                            {item}
-                        </SelectItem>
+                        column.id == 'national' ?
+                            <SelectItem className='text-xs font-medium' key={item} value={item}>
+                                {item == 'Vietnamese' ? '🇻🇳' : item == 'Korean' ? '🇰🇷' : '🇺🇸'} - {item}
+                            </SelectItem>
+                            :
+                            <SelectItem key={item} value={item} className='text-xs font-medium h-7'>
+                                {item}
+                            </SelectItem>
                     ))}
 
                     <div className='flex *:flex-1 gap-x-1 mt-2'>
@@ -303,8 +309,8 @@ function Filter({
                         <ComboboxChips variant='xs' ref={containerRef}>
                             <ComboboxValue>
                                 {(value) => (
-                                    <ComboboxInput variant='xs' className='text-xs'
-                                                   placeholder={value.length > 0 ? renderValue(value) : 'Multiple Select'}/>
+                                    <ComboboxInput variant='xs' className='text-xs font-medium'
+                                                   placeholder={renderValue(value)}/>
                                 )}
                             </ComboboxValue>
                         </ComboboxChips>
@@ -348,7 +354,7 @@ function Filter({
                                         ? `(${column.getFacetedMinMaxValues()?.[0]})`
                                         : ''
                                 }`}
-                                className="min-w-28 h-7 text-xs font-normal text-primary rounded-xs focus-visible:outline-0"
+                                className="min-w-28 h-7 text-xs! font-medium text-primary rounded-xs focus-visible:outline-0"
                             />
                             <DebouncedInput
                                 type="number"
@@ -363,7 +369,7 @@ function Filter({
                                         ? `(${column.getFacetedMinMaxValues()?.[1]})`
                                         : ''
                                 }`}
-                                className="min-w-28 h-7 text-xs font-normal text-primary rounded-xs focus-visible:outline-0"
+                                className="min-w-28 h-7 text-xs! font-medium text-primary rounded-xs focus-visible:outline-0"
                             />
                         </div>
                     </div>
@@ -376,9 +382,9 @@ function Filter({
                                     variant="outline"
                                     mode="input"
                                     placeholder={!dateFilterValue?.from && !dateFilterValue?.to}
-                                    className="min-w-[200px] w-full h-7! rounded-xs"
+                                    className="min-w-[200px] w-full h-7! rounded-xs font-medium text-xs"
                                 >
-                                    <CalendarIcon/>
+                                    <CalendarIcon size={13}/>
                                     {dateFilterValue?.from ? (
                                         dateFilterValue.to ? (
                                             <>
@@ -412,7 +418,10 @@ function Filter({
                                     <Button variant="outline" onClick={() => column.setFilterValue(undefined)}>
                                         Clear
                                     </Button>
-                                    <Button onClick={() => column.setFilterValue({from: startOfDay(new Date()), to: startOfDay(new Date())})}>Today</Button>
+                                    <Button onClick={() => column.setFilterValue({
+                                        from: startOfDay(new Date()),
+                                        to: startOfDay(new Date())
+                                    })}>Today</Button>
                                 </div>
                             </PopoverContent>
                         </Popover>
@@ -422,17 +431,17 @@ function Filter({
                             value={(columnFilterValue ?? '') as string}
                             onChange={(value) => column.setFilterValue(value)}
                             placeholder={`Search...`}
-                            className="w-full h-7 text-xs font-normal text-primary rounded-xs focus-visible:outline-0"
+                            className="w-full h-7 text-xs! text-primary font-medium rounded-xs focus-visible:outline-0"
                         />
 }
 
 // A typical debounced input react component
 export function DebouncedInput({
-                            value: initialValue,
-                            onChange,
-                            debounce = 500,
-                            ...props
-                        }: {
+                                   value: initialValue,
+                                   onChange,
+                                   debounce = 500,
+                                   ...props
+                               }: {
     value: string | number
     onChange: (value: string | number) => void
     debounce?: number

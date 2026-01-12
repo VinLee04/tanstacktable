@@ -7,7 +7,7 @@ export type TUser = {
     avatar: string;
     email: string;
     role: string;
-    active: boolean;
+    active: 'Available' | 'Disabled';
     joinDate: Date;
     salary: number;
     national: string;
@@ -29,7 +29,7 @@ export const makeUser = (num: number) => {
             avatar: faker.image.avatar(),
             email: faker.internet.email(),
             role: faker.helpers.arrayElement(['STAFF', 'LEADER', 'MANAGER', "INTERN"]),
-            active: faker.datatype.boolean(),
+            active: faker.helpers.arrayElement(['Available', 'Disabled']),
             joinDate: startOfDay(faker.date.between({from: '2025/12/1', to: today})),
             salary: faker.number.int({min: 100, max: 500}),
             national: faker.helpers.arrayElement(['Vietnamese', 'Korean', 'United State']),
