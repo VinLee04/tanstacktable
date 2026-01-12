@@ -2051,7 +2051,7 @@ const makeEquipments = (num: number) => {
             use_yn: faker.helpers.arrayElement(['Y', 'N']),
             as_no: 700000 + i,
             as_sno: 800000 + i,
-            srl_no: 900000 + 1,
+            srl_no: 900000 + i,
             re_mark: faker.commerce.productDescription(),
             dev_start_dt: startDate,
             puchs_dt: punchDate,
