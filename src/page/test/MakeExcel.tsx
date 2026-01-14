@@ -4,12 +4,13 @@ import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/table/button.tsx";
 import {useState} from "react";
 import * as XLSX from "xlsx";
+import {format} from "date-fns";
 
 type Equipment = {
-    cp_nm: string,
+    corp_nm: string,
     lct_nm: string,
-    mf_nm: string,
-    md_nm: string,
+    mf_cd: string,
+    md_cd: string,
     mt_cd: string,
     mt_nm: string,
     sp_nm: string,
@@ -22,9 +23,9 @@ type Equipment = {
     as_sno: number,
     srl_no: number,
     re_mark: string,
-    dev_start_dt: Date,
-    puchs_dt: Date,
-    vailed_dt: Date,
+    dev_start_dt: string,
+    puchs_dt: string,
+    vailed_dt: string,
 }
 
 
@@ -33,12 +34,12 @@ const makeEquipments = (num: number) => {
     const today = new Date();
     for (let i = 0; i < num; i++) {
 
-        const startDate = faker.date.between({from: '2020/11/03', to: '2022/01/02'});
-        const validDate = faker.date.between({from: '2024/01/01', to: today})
-        const punchDate = faker.date.between({from: startDate, to: validDate})
+        const startDate = format(faker.date.between({from: '2020/11/03', to: '2022/01/02'}), 'yyyy/MM/dd').toString();
+        const validDate = format(faker.date.between({from: '2024/01/01', to: today}), 'yyyy/MM/dd').toString();
+        const punchDate = format(faker.date.between({from: startDate, to: validDate}), 'yyyy/MM/dd').toString();
 
         equipments.push({
-            cp_nm: 'HSV',
+            corp_nm: 'HSV',
             lct_nm: faker.helpers.arrayElement([
                 "1FAC",
                 "2FAC",
@@ -303,7 +304,7 @@ const makeEquipments = (num: number) => {
                 "AIR",
                 "ELECTRIC"
             ]),
-            mf_nm: faker.helpers.arrayElement([
+            mf_cd: faker.helpers.arrayElement([
                 "A CHAU",
                 "AHI GROUP",
                 "ALLIANCES",
@@ -558,7 +559,7 @@ const makeEquipments = (num: number) => {
                 "ZHANYANG",
                 "ZHONG MING"
             ]),
-            md_nm: faker.helpers.arrayElement([
+            md_cd: faker.helpers.arrayElement([
                 "ST-957B",
                 "KM-957-7",
                 "LT5-H7600-1",
